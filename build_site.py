@@ -197,7 +197,8 @@ def build_page(content_file, output_file, title, description=''):
         html_content += '\n' + tags_html
 
     # Generate breadcrumbs
-    path = output_file.replace('/Users/mordechai/oct-5-2-2025/about-me-site/build', '')
+    base_dir = str(Path(__file__).parent / 'build')
+    path = output_file.replace(base_dir, '')
     breadcrumbs = generate_breadcrumbs(path)
 
     # Determine if depth meter needed (not on landing)
@@ -225,7 +226,7 @@ def main():
     """Main build process"""
     print('Building site...\n')
 
-    base = Path('/Users/mordechai/oct-5-2-2025/about-me-site')
+    base = Path(__file__).parent
     content_dir = base / 'content'
     build_dir = base / 'build'
 
