@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Israeli Tech | Mordechai</title>
+  <meta name="description" content="Israeli Tech">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="logo">mordechai.dev</a>
+      <div class="nav-links">
+        <a href="/projects/">Projects</a>
+        <a href="/thinking/">Thinking</a>
+        <a href="/tech/">Tech</a>
+        <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">Home</a> >
+  <a href="/projects/">Projects</a> >
+  <span aria-current="page">Israeli Tech</span>
+</nav>
+
+  <main class="container" id="main-content">
+    <h1>Project: Israeli Tech Content Corpus</h1>
+<h2>Card Summary (Layer 1)</h2>
+Automated pipeline for collecting, transcribing, and translating Israeli tech podcasts and articles. Built to understand the Israeli ecosystem through primary sources - 31 podcast episodes + 75+ articles processed.
+<h2>Quick Facts (Layer 1)</h2>
+<ul><li><strong>Sources:</strong> Reversim podcast, Geektime articles, NoCamels innovation coverage</li>
+<li><strong>Processing:</strong> Hebrew→English translation, AI summarization, entity extraction</li>
+<li><strong>Volume:</strong> 31 podcast episodes (full transcripts), 75+ articles</li>
+<li><strong>Tech:</strong> Whisper transcription, Gemini translation, RSS parsing</li>
+<li><strong>Status:</strong> Active data collection</li>
+</ul>
+---
+<details class="expandable"><summary>What It Does (Layer 2)</summary><div class="expandable-content">
+<h3>The Problem</h3>
+Understanding the Israeli tech ecosystem requires reading Hebrew content (podcasts, articles, industry reports). English sources are limited and often surface-level.
+<h3>The Solution</h3>
+Built automated content collection and processing:
+<p>1. <strong>Podcast Transcription</strong>: Reversim episodes → Whisper → timestamped transcripts
+2. <strong>Translation Pipeline</strong>: Batch Hebrew→English translation (Gemini 2.5 Flash Lite)
+3. <strong>Article Scraping</strong>: RSS feeds from Geektime, NoCamels → structured data
+4. <strong>AI Analysis</strong>: Extract companies mentioned, people, technologies, key topics
+5. <strong>Structured Storage</strong>: JSON with metadata (topics, confidence, summaries)</p>
+<h3>Why It Matters</h3>
+<ul><li><strong>Primary sources</strong>: Not filtered through US tech press</li>
+<li><strong>Hebrew fluency</strong>: Access to content unavailable in English</li>
+<li><strong>Pattern recognition</strong>: Identify trends before they go global</li>
+<li><strong>Network mapping</strong>: Track who's building what, where</li>
+</ul>
+---
+<details class="expandable"><summary>Technical Details (Layer 3)</summary><div class="expandable-content">
+<h3>Architecture</h3>
+<pre><code class="language-">RSS Feeds (Reversim, Geektime, NoCamels)
+    ↓
+Feed Parser (Python feedparser)
+    ↓
+Audio Transcription (Whisper for Hebrew)
+    ↓
+Batch Translation (Gemini 2.5 Flash Lite)
+    - 20 segments per batch
+    - ~5 sec per 512 segments
+    ↓
+AI Analysis (entity extraction, summarization)
+    ↓
+Structured JSON Storage
+    - Hebrew + English text
+    - Metadata (topics, companies, people)
+    - Confidence scores
+</code></pre>
+<h3>Translation Optimization</h3>
+<strong>Batch Processing</strong>:
+<pre><code class="language-python">def translate_in_batches(segments, batch_size=20):
+    """Combine 20 segments, send to Gemini, parse results"""
+    for batch in chunks(segments, batch_size):
+        # Format: [0] speaker: text\n[1] speaker: text...
+        combined = "\n".join(
+            f"[{i}] {seg['speaker']}: {seg['text']}"
+            for i, seg in enumerate(batch)
+        )
+<p># Single API call for 20 segments
+        translation = gemini.translate(combined)</p>
+<p># Parse numbered results back to individual segments
+        return parse_translation_results(translation)
+</code></pre></p>
+<strong>Why Batch?</strong>:
+<ul><li>Single API call vs 20 calls = 20x faster</li>
+<li>Lower cost (fewer API requests)</li>
+<li>Better context for translation (sees surrounding segments)</li>
+</ul>
+<h3>Content Analysis</h3>
+<strong>Entity Extraction</strong>:
+<pre><code class="language-python">def analyze_article(content):
+    """Extract structured metadata from Hebrew content"""
+    return {
+        "main_topic": "...",
+        "key_points": [...],
+        "companies_mentioned": [...],
+        "people_mentioned": [...],
+        "technologies": [...],
+        "category": "...",  # funding, product launch, hiring, etc.
+        "sentiment": "...",
+        "importance_score": 0.85
+    }
+</code></pre>
+<h3>Data Structure</h3>
+<strong>Podcast Episode JSON</strong>:
+<pre><code class="language-json">{
+  "episode_number": 502,
+  "title": "...",
+  "date": "2024-10-15",
+  "summary_hebrew": "...",
+  "summary_english": "...",
+  "transcript": [
+    {
+      "timestamp": "00:05:23",
+      "speaker": "Ran Tavory",
+      "text_hebrew": "...",
+      "text_english": "..."
+    }
+  ],
+  "topics": ["AI", "Startups", "Investment"],
+  "companies_mentioned": ["Wiz", "monday.com"],
+  "translation_confidence": 0.89
+}
+</code></pre>
+<h3>Implementation Challenges</h3>
+<strong>Challenge 1: Hebrew transcription accuracy</strong>
+<ul><li><strong>Solution</strong>: Whisper model tuned for Hebrew, manual verification</li>
+<li><strong>Result</strong>: ~85% accuracy, good enough for gist extraction</li>
+</ul>
+<strong>Challenge 2: Translation preserving technical terms</strong>
+<ul><li><strong>Solution</strong>: Batch translation maintains context, technical terms preserved</li>
+<li><strong>Result</strong>: "RAG" stays "RAG", not translated to Hebrew equivalent</li>
+</ul>
+<strong>Challenge 3: RSS feed protection (Calcalist)</strong>
+<ul><li><strong>Solution</strong>: Pivoted to accessible feeds (Geektime, NoCamels)</li>
+<li><strong>Result</strong>: 75+ articles from open sources</li>
+</ul>
+---
+<h2>Links</h2>
+<h3>Code</h3>
+<ul><li><strong>GitHub</strong>: Part of larger content processing suite</li>
+<li><strong>Data</strong>: JSON files with full transcripts + translations</li>
+</ul>
+<h3>Outputs</h3>
+<ul><li>31 Reversim episodes fully translated</li>
+<li>75+ articles (30 Geektime Hebrew + 45 NoCamels English)</li>
+<li>Structured metadata for all content</li>
+</ul>
+---
+<h2>Tech Stack Tags</h2>
+<code>python</code> <code>whisper</code> <code>openrouter</code> <code>gemini</code> <code>feedparser</code> <code>rss</code> <code>hebrew</code> <code>translation</code> <code>transcription</code> <code>nlp</code>
+<p>---</p>
+<h2>What This Proves</h2>
+<strong>Language Flexibility</strong>: Hebrew→English translation pipeline
+<strong>Data Processing</strong>: Automated content collection at scale
+<strong>Systematic Approach</strong>: Not one-off scraping - reusable pipeline
+<strong>Domain Knowledge</strong>: Understanding Israeli tech ecosystem through primary sources
+<strong>Tool Selection</strong>: Chose right tools (Whisper, Gemini, feedparser) for each step
+<p>Built to solve my own need: understand the ecosystem I'm operating in.</p>
+<p>---</p>
+<h2>Meta Notes</h2>
+<div class="tech-tags">
+  <a href="/tech/#python" class="tag">python</a>
+  <a href="/tech/#whisper" class="tag">whisper</a>
+  <a href="/tech/#openrouter" class="tag">openrouter</a>
+  <a href="/tech/#gemini" class="tag">gemini</a>
+  <a href="/tech/#feedparser" class="tag">feedparser</a>
+  <a href="/tech/#rss" class="tag">rss</a>
+  <a href="/tech/#hebrew" class="tag">hebrew</a>
+  <a href="/tech/#translation" class="tag">translation</a>
+  <a href="/tech/#transcription" class="tag">transcription</a>
+  <a href="/tech/#nlp" class="tag">nlp</a>
+</div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:YOUR_EMAIL">Email</a>
+    </div>
+    <div class="footer-meta">
+      <a href="/about/full-story.html">Complete Story</a> |
+      Last updated: 2025-10-17
+    </div>
+  </footer>
+
+  <div class="depth-meter" aria-label="Content depth indicator">
+    <span class="depth-label">Depth:</span>
+    <span class="depth-dots" role="img" aria-label="Depth level indicator">
+      <span class="dot">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </span>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

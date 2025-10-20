@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How I Learn | Mordechai</title>
+  <meta name="description" content="How I Learn">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="logo">mordechai.dev</a>
+      <div class="nav-links">
+        <a href="/projects/">Projects</a>
+        <a href="/thinking/">Thinking</a>
+        <a href="/tech/">Tech</a>
+        <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">Home</a> >
+  <a href="/thinking/">Thinking</a> >
+  <span aria-current="page">How I Learn</span>
+</nav>
+
+  <main class="container" id="main-content">
+    <h1>How I Think: Learning</h1>
+<h2>Question</h2>
+How do you learn new tech?
+<h2>Surface Answer (Layer 1)</h2>
+I don't "learn" in the traditional sense - I build. 12,500 AI conversations over 2.5 years = systematic pattern recognition through solving real problems, not completing tutorials.
+<p>---</p>
+<details class="expandable"><summary>The Full Answer (Layer 2)</summary><div class="expandable-content">
+<h3>The Pattern</h3>
+<p>Most people approach learning like this:
+1. Read documentation
+2. Watch tutorials
+3. Complete exercises
+4. <em>Then</em> maybe build something</p>
+<p>I do this:
+1. Identify real problem I need to solve
+2. Build minimum viable solution with AI assistance
+3. Encounter gaps in understanding
+4. Research <em>only what's needed</em> to solve those gaps
+5. Iterate until production-ready</p>
+<strong>Difference</strong>: I learn <em>just enough, just in time</em> vs <em>everything upfront, maybe useful later</em>
+<h3>Why It Works</h3>
+<strong>Traditional learning</strong>:
+<ul><li>Front-loads information you might not need</li>
+<li>Optimizes for breadth (know many things)</li>
+<li>Low retention (if you don't use it, you lose it)</li>
+</ul>
+<strong>Building-first learning</strong>:
+<ul><li>Loads information when you need it (high motivation)</li>
+<li>Optimizes for depth (understand what you actually use)</li>
+<li>High retention (learned through application, not memorization)</li>
+</ul>
+<strong>Example</strong>: I didn't "learn PostgreSQL" - I needed vector search for 253K messages, discovered pgvector, implemented it, encountered performance issues, learned keyset pagination, optimized. Now I <em>understand</em> pgvector at production level, not tutorial level.
+<h3>The AI Multiplier</h3>
+<p>12,500 conversations with AI tools taught me:
+<ul><li>How to ask questions that get useful answers</li>
+<li>How to recognize when AI is wrong (and why)</li>
+<li>How to translate vague requirements → specific prompts</li>
+<li>How to iterate from working → production-ready</li>
+</ul>
+<strong>Key insight</strong>: AI doesn't replace understanding. It accelerates the feedback loop.</p>
+<p>Old: Read docs → write code → wait hours/days for results → debug → repeat
+New: Ask AI → get code → test immediately → refine → repeat (minutes not days)</p>
+<p>The skill isn't "knowing everything" - it's <strong>efficient iteration toward understanding</strong>.</p>
+<p>---</p>
+<details class="expandable"><summary>Concrete Examples (Layer 3)</summary><div class="expandable-content">
+<h3>Example 1: Learning RAG</h3>
+<strong>Didn't do</strong>: Complete "RAG from scratch" course
+<strong>Did do</strong>:
+1. Had problem: search 253K messages semantically
+2. Built basic vector search (FAISS) - worked but slow
+3. Discovered pgvector - migrated, faster
+4. Noticed irrelevant results - added classification metadata
+5. Still getting wrong results - built query routing
+6. Users needed context - added conversation expansion
+7. Now: production RAG system with 19 metadata fields
+<strong>Result</strong>: I understand RAG at <em>implementation depth</em>, not <em>tutorial depth</em>
+<h3>Example 2: Learning PostGIS</h3>
+<strong>Didn't do</strong>: PostGIS certification course
+<strong>Did do</strong>:
+1. Needed: verify if address is in Empowerment Zone
+2. Found: PostGIS can do spatial queries
+3. Implemented: <code>ST_Contains(geometry, ST_Point(lng, lat))</code>
+4. Slow: added spatial indexes
+5. Fast: <50ms per address lookup
+6. Production: verifying hundreds of addresses
+<strong>Result</strong>: I know <em>exactly what I need</em> for this use case, nothing more
+<h3>Example 3: Learning TypeScript</h3>
+<strong>Didn't do</strong>: TypeScript handbook cover-to-cover
+<strong>Did do</strong>:
+1. Project needed: 1,220-line mapping service (nested → flat)
+2. Started in Python - hit type safety issues
+3. Migrated to TypeScript - caught errors at compile time
+4. Learned generics <em>when needed</em> for type-safe mapping
+5. Learned conditional types <em>when needed</em> for flexible interfaces
+6. Now: comfortable with advanced TypeScript patterns
+<strong>Result</strong>: Learned through 1,200 lines of real code, not toy examples
+<p>---</p>
+<h2>Related Topics</h2>
+<ul><li><a href="./the-disconnect.md">The Disconnect</a> - Why companies don't operate this way</li>
+<li><a href="../projects/">What I've Built</a> - Evidence of this approach working</li>
+<li><a href="../tech/">Tech I Use</a> - Tools that enable this workflow</li>
+</ul>
+---
+<h2>Meta Notes</h2>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:YOUR_EMAIL">Email</a>
+    </div>
+    <div class="footer-meta">
+      <a href="/about/full-story.html">Complete Story</a> |
+      Last updated: 2025-10-17
+    </div>
+  </footer>
+
+  <div class="depth-meter" aria-label="Content depth indicator">
+    <span class="depth-label">Depth:</span>
+    <span class="depth-dots" role="img" aria-label="Depth level indicator">
+      <span class="dot">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </span>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wotc Tax | Mordechai</title>
+  <meta name="description" content="Wotc Tax">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="logo">mordechai.dev</a>
+      <div class="nav-links">
+        <a href="/projects/">Projects</a>
+        <a href="/thinking/">Thinking</a>
+        <a href="/tech/">Tech</a>
+        <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">Home</a> >
+  <a href="/projects/">Projects</a> >
+  <span aria-current="page">Wotc Tax</span>
+</nav>
+
+  <main class="container" id="main-content">
+    <h1>Project: WOTC Tax Credit Processing</h1>
+<h2>Card Summary (Layer 1)</h2>
+AI-powered tax credit processing application: 3-tier microservices architecture handling PDF extraction, nested JSON→flat table mapping, and PostGIS spatial queries for Work Opportunity Tax Credit (WOTC) eligibility.
+<h2>Quick Facts (Layer 1)</h2>
+<ul><li><strong>Architecture:</strong> 3-tier microservices (Vercel frontend + 2 Railway services)</li>
+<li><strong>Database:</strong> PostgreSQL with 109-column applicants table + PostGIS</li>
+<li><strong>AI Pipeline:</strong> PDF extraction via OpenRouter/Gemini with confidence scoring</li>
+<li><strong>Scale:</strong> 1,220-line field mapping service, 81-column email metadata</li>
+<li><strong>Status:</strong> Production for tax consulting business</li>
+</ul>
+---
+<details class="expandable"><summary>What It Does (Layer 2)</summary><div class="expandable-content">
+<h3>The Problem</h3>
+Tax credit consultants receive PDFs from clients with WOTC forms (8850, questionnaires, etc.). Manual data entry is:
+<ul><li>Time-consuming (20+ minutes per applicant)</li>
+<li>Error-prone (missing fields, wrong eligibility)</li>
+<li>Difficult to verify (Empowerment Zone eligibility requires GIS)</li>
+</ul>
+<h3>The Solution</h3>
+Built end-to-end automation:
+<p>1. <strong>Gmail Integration</strong>: Service Account with domain-wide delegation fetches PDFs from client emails
+2. <strong>AI Extraction</strong>: OpenRouter/Gemini extracts 60+ nested fields from PDFs with confidence scores
+3. <strong>Field Mapping</strong>: 1,220-line service maps nested AI output → flat 109-column database structure
+4. <strong>Spatial Verification</strong>: PostGIS queries verify address eligibility for Empowerment Zones (#4, #6)
+5. <strong>Web Interface</strong>: Milestone-based UI for reviewing/correcting extracted data</p>
+<h3>Impact</h3>
+<ul><li><strong>20 minutes → 2 minutes</strong> per applicant</li>
+<li><strong>Higher accuracy</strong> with AI extraction + confidence scores</li>
+<li><strong>Automatic GIS verification</strong> (was manual lookup)</li>
+<li><strong>Scalable</strong> to hundreds of applicants per batch</li>
+</ul>
+---
+<details class="expandable"><summary>Technical Details (Layer 3)</summary><div class="expandable-content">
+<h3>Architecture</h3>
+<pre><code class="language-">Gmail API (Service Account)
+    ↓
+Email Processing Service (Railway)
+    ↓
+PDF → AI Extraction (OpenRouter/Gemini)
+    ↓
+Nested JSON Output (60+ fields)
+    ↓
+Field Mapping Service (1,220 lines)
+    ↓
+PostgreSQL Database (Supabase)
+    - 81-column emails table
+    - 109-column applicants table
+    - PostGIS for spatial queries
+    ↓
+Frontend (Vercel + Next.js)
+    - Milestone-based review UI
+    - Confidence highlighting
+    - Spatial map display
+</code></pre>
+<h3>Database Complexity</h3>
+<strong>emails table (81 columns)</strong>
+<ul><li>Gmail metadata (ID, subject, sender, date)</li>
+<li>Attachment tracking (count, PDF status)</li>
+<li>Processing stages (queued → processing → completed)</li>
+<li>AI extraction status + confidence scores</li>
+</ul>
+<strong>applicants table (109 columns)</strong>
+<ul><li>Personal info (14 fields)</li>
+<li>Address (5 fields)</li>
+<li>Form 8850 (9 fields)</li>
+<li>WOTC Questionnaire (28 fields)</li>
+<li>NYS Youth form (12 fields)</li>
+<li>EZ eligibility (PostGIS spatial results)</li>
+<li>Processing metadata (20+ fields)</li>
+</ul>
+<h3>The Crown Jewel: Field Mapping Service</h3>
+<strong>Challenge</strong>: AI returns deeply nested JSON (60+ fields), database needs flat structure (109 columns)
+<strong>Solution</strong>: 1,220-line TypeScript service that:
+<pre><code class="language-typescript">// AI returns this:
+{
+  analysis_summary: { total_pages: 5, confidence: 0.87 },
+  applicants: [{
+    basic_info: { first_name: "John", ssn: "123-45-6789" },
+    form_8850: { "8850_1": true, "8850_2": false },
+    form_8qf_questions: { q_1: "yes", q_2a: "2024-01-15" }
+  }]
+}
+<p>// Maps to this:
+{
+  "First Name": "John",
+  "SSN#": "123-45-6789",
+  "8850 #1": "checked",
+  "8850 #2": "unchecked",
+  "Q - 1": "yes",
+  "Q - 2a": "01/15/2024"
+}
+</code></pre></p>
+<strong>Handles</strong>:
+<ul><li>Date format conversions</li>
+<li>Boolean → checkbox values</li>
+<li>Null/undefined → empty strings</li>
+<li>Nested paths → flat column names</li>
+<li>Type coercion + validation</li>
+</ul>
+<h3>PostGIS Spatial Queries</h3>
+<strong>Empowerment Zone Eligibility</strong>:
+<pre><code class="language-sql">SELECT
+  CASE
+    WHEN EXISTS (
+      SELECT 1 FROM empowerment_zones
+      WHERE zone_type = 'type_4'
+      AND ST_Contains(geometry, ST_Point(lng, lat))
+    ) THEN '#4'
+    WHEN EXISTS (
+      SELECT 1 FROM empowerment_zones
+      WHERE zone_type = 'type_6'
+      AND ST_Contains(geometry, ST_Point(lng, lat))
+    ) THEN '#6'
+    ELSE NULL
+  END as ez_type
+</code></pre>
+<p>Verifies addresses against GIS boundaries for tax credit eligibility.</p>
+<h3>Implementation Challenges & Solutions</h3>
+<strong>Challenge 1: Service Account authentication across Google Workspace</strong>
+<ul><li><strong>Solution</strong>: Domain-wide delegation with proper OAuth2 scopes</li>
+<li><strong>Result</strong>: Automated email access without manual auth</li>
+</ul>
+<strong>Challenge 2: AI extraction inconsistency (forms vary widely)</strong>
+<ul><li><strong>Solution</strong>: Confidence scoring + manual review for low-confidence fields</li>
+<li><strong>Result</strong>: 87% average confidence, fast correction for rest</li>
+</ul>
+<strong>Challenge 3: Nested JSON → Flat DB without losing data</strong>
+<ul><li><strong>Solution</strong>: Comprehensive mapping with bidirectional transforms</li>
+<li><strong>Result</strong>: No data loss, full round-trip support</li>
+</ul>
+<strong>Challenge 4: Spatial queries were slow</strong>
+<ul><li><strong>Solution</strong>: PostGIS spatial indexes on zone geometries</li>
+<li><strong>Result</strong>: <50ms lookup time per address</li>
+</ul>
+---
+<h2>Links</h2>
+<h3>Code</h3>
+<ul><li><strong>GitHub</strong>: Private - available on request</li>
+<li><strong>Tech Docs</strong>: Comprehensive database schema + API documentation</li>
+</ul>
+<h3>Stack Details</h3>
+<ul><li><strong>Frontend</strong>: Next.js, TypeScript, Tailwind CSS</li>
+<li><strong>Backend</strong>: Python (AI pipeline), TypeScript (mapping service)</li>
+<li><strong>Database</strong>: Supabase (PostgreSQL + PostGIS)</li>
+<li><strong>Hosting</strong>: Vercel (frontend), Railway (backend services)</li>
+<li><strong>AI</strong>: OpenRouter with Gemini 2.5 Flash Lite</li>
+</ul>
+---
+<h2>Tech Stack Tags</h2>
+<code>typescript</code> <code>nextjs</code> <code>postgresql</code> <code>postgis</code> <code>supabase</code> <code>railway</code> <code>vercel</code> <code>google-api</code> <code>openai</code> <code>openrouter</code> <code>gemini</code> <code>pdf-extraction</code> <code>spatial-queries</code> <code>microservices</code>
+<p>---</p>
+<h2>What This Proves</h2>
+<strong>Platform-Agnostic Problem Solving</strong>: Combined Vercel + Railway + Supabase + Google APIs seamlessly
+<strong>Complex Data Modeling</strong>: 109-column table isn't simple CRUD
+<strong>AI Integration</strong>: Production AI pipeline with confidence scoring and error handling
+<strong>Enterprise Architecture</strong>: 3-tier microservices, proper separation of concerns
+<strong>Domain Adaptation</strong>: Learned tax credit domain, built production solution
+<p>This was built for a real business with real money at stake. Not a side project.</p>
+<p>---</p>
+<h2>Meta Notes</h2>
+<div class="tech-tags">
+  <a href="/tech/#typescript" class="tag">typescript</a>
+  <a href="/tech/#nextjs" class="tag">nextjs</a>
+  <a href="/tech/#postgresql" class="tag">postgresql</a>
+  <a href="/tech/#postgis" class="tag">postgis</a>
+  <a href="/tech/#supabase" class="tag">supabase</a>
+  <a href="/tech/#railway" class="tag">railway</a>
+  <a href="/tech/#vercel" class="tag">vercel</a>
+  <a href="/tech/#google-api" class="tag">google-api</a>
+  <a href="/tech/#openai" class="tag">openai</a>
+  <a href="/tech/#openrouter" class="tag">openrouter</a>
+  <a href="/tech/#gemini" class="tag">gemini</a>
+  <a href="/tech/#pdf-extraction" class="tag">pdf-extraction</a>
+  <a href="/tech/#spatial-queries" class="tag">spatial-queries</a>
+  <a href="/tech/#microservices" class="tag">microservices</a>
+</div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:YOUR_EMAIL">Email</a>
+    </div>
+    <div class="footer-meta">
+      <a href="/about/full-story.html">Complete Story</a> |
+      Last updated: 2025-10-17
+    </div>
+  </footer>
+
+  <div class="depth-meter" aria-label="Content depth indicator">
+    <span class="depth-label">Depth:</span>
+    <span class="depth-dots" role="img" aria-label="Depth level indicator">
+      <span class="dot">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </span>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "sparkii-rag-site",
+  "version": "1.0.0",
+  "description": "RAG-powered conversation search and AI knowledge showcase",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "python3 build_site.py",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sparkii Rag | Mordechai</title>
+  <meta name="description" content="Sparkii Rag">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="logo">mordechai.dev</a>
+      <div class="nav-links">
+        <a href="/projects/">Projects</a>
+        <a href="/thinking/">Thinking</a>
+        <a href="/tech/">Tech</a>
+        <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">Home</a> >
+  <a href="/projects/">Projects</a> >
+  <span aria-current="page">Sparkii Rag</span>
+</nav>
+
+  <main class="container" id="main-content">
+    <h1>Project: Sparkii RAG System</h1>
+<h2>Card Summary (Layer 1 - visible without clicking)</h2>
+Production RAG system for 253,432 AI conversation messages with classification-aware retrieval, query routing, and Claude-powered synthesis. Built to make my entire AI learning history searchable.
+<h2>Quick Facts (Layer 1)</h2>
+<ul><li><strong>Scale:</strong> 253,432 messages indexed from 11,439 conversations</li>
+<li><strong>Tech:</strong> Stella 1.5B embeddings, PostgreSQL + pgvector, FastAPI, Claude Haiku 4.5</li>
+<li><strong>Status:</strong> Production, actively running</li>
+<li><strong>Timeline:</strong> Day 1 to working API in ~8 hours</li>
+</ul>
+---
+<details class="expandable"><summary>What It Does (Layer 2)</summary><div class="expandable-content">
+<h3>The Problem</h3>
+I had 2.5 years of AI conversations (12,500+ chats, 400k+ messages) across multiple platforms. Needed semantic search to find:
+<ul><li>"How did I solve X problem before?"</li>
+<li>"What did I learn about Y technology?"</li>
+<li>"Show me all conversations about Z topic"</li>
+</ul>
+<h3>The Solution</h3>
+Built a classification-aware RAG system that doesn't just do vector similarity - it understands context:
+<ul><li><strong>19 metadata fields per message</strong>: <code>contains_code</code>, <code>code_language</code>, <code>user_intent</code>, <code>technical_depth</code>, <code>tools_used</code>, etc.</li>
+<li><strong>Query routing</strong>: Automatically detects if you're debugging, searching code, asking conceptual questions, or recovering from errors</li>
+<li><strong>Conversation context</strong>: Returns not just the matching message, but previous context from the thread</li>
+<li><strong>Smart filtering</strong>: Pre-filters 253K messages using metadata before vector search (10x faster)</li>
+</ul>
+<h3>What Makes It Production-Ready</h3>
+<ul><li>REST API with <code>/search</code>, <code>/search/smart</code>, <code>/ask</code> endpoints</li>
+<li>FastAPI server with proper error handling</li>
+<li>Distance-based confidence scoring</li>
+<li>Claude Haiku 4.5 synthesis for natural language answers</li>
+<li>Performance optimization (FP16 embeddings, keyset pagination)</li>
+</ul>
+---
+<details class="expandable"><summary>Technical Details (Layer 3)</summary><div class="expandable-content">
+<h3>Architecture</h3>
+<pre><code class="language-">User Query
+    ↓
+Query Router (classifies intent)
+    ↓
+Metadata Filter (narrows 253K → relevant subset)
+    ↓
+Vector Search (pgvector similarity)
+    ↓
+Context Expansion (fetch conversation thread)
+    ↓
+Claude Haiku (synthesize answer)
+    ↓
+Formatted Response (with sources + confidence)
+</code></pre>
+<h3>What Makes It Different</h3>
+<strong>1. Classification Metadata (19 fields most RAG systems don't have)</strong>
+<ul><li><code>contains_code</code>, <code>code_language</code> (Python, JS, SQL, etc.)</li>
+<li><code>user_intent</code> (debugging, learning, implementation)</li>
+<li><code>technical_depth</code> (beginner, intermediate, advanced)</li>
+<li><code>tools_used</code>, <code>mcp_tools_used</code></li>
+<li><code>response_type</code> (solution, explanation, question)</li>
+<li><code>frustration_indicator</code>, <code>urgency_level</code></li>
+</ul>
+<strong>2. Query Routing (5 query types)</strong>
+<ul><li><strong>Debugging</strong>: Filters for code + tools + error context</li>
+<li><strong>Code search</strong>: Code only, assistant responses</li>
+<li><strong>Conceptual</strong>: No filtering, pure semantic search</li>
+<li><strong>Workflow</strong>: Includes conversation context</li>
+<li><strong>Error recovery</strong>: Filters by frustration indicators</li>
+</ul>
+<strong>3. Production Scale</strong>
+<ul><li>253K messages (not a toy 1K example)</li>
+<li>~5.5 messages/sec embedding generation</li>
+<li>Optimized with FP16 half-precision, keyset pagination</li>
+<li>Currently at 801 messages re-embedded with Stella</li>
+</ul>
+<h3>Implementation Challenges & Solutions</h3>
+<strong>Challenge 1: Embedding 253K messages took 27 hours with OFFSET</strong>
+<ul><li><strong>Solution</strong>: Switched to keyset pagination (WHERE id > last_id)</li>
+<li><strong>Result</strong>: Constant speed, no degradation, ~12 hours estimated</li>
+</ul>
+<strong>Challenge 2: Generic vector search returned irrelevant results</strong>
+<ul><li><strong>Solution</strong>: Added classification layer with 19 metadata fields</li>
+<li><strong>Result</strong>: Pre-filter before vector search, 10x faster + more relevant</li>
+</ul>
+<strong>Challenge 3: Lost conversation context with single-message retrieval</strong>
+<ul><li><strong>Solution</strong>: Fetch previous messages from same conversation thread</li>
+<li><strong>Result</strong>: User sees "why" not just "what"</li>
+</ul>
+<h3>Code Patterns</h3>
+<strong>Smart Retrieval with Classification</strong>
+<pre><code class="language-python">def search_with_routing(self, query: str, top_k: int = 10):
+    # Detect query type
+    query_type = self.route_query(query)
+<p># Build filters based on query type
+    filters = self._build_filters_for_query_type(query_type)</p>
+<p># Execute filtered vector search
+    results = self.search(query, top_k, filters)</p>
+<p># Expand with conversation context
+    return self._expand_context(results)
+</code></pre></p>
+<strong>Query Routing Logic</strong>
+<pre><code class="language-python">def route_query(self, query: str) -> QueryType:
+    """Classify query intent for optimal retrieval"""
+    query_lower = query.lower()
+<p># Debugging queries
+    if any(word in query_lower for word in
+           ['error', 'fix', 'bug', 'issue', 'problem']):
+        return QueryType.DEBUGGING</p>
+<p># Code search
+    if any(word in query_lower for word in
+           ['code', 'function', 'implementation', 'example']):
+        return QueryType.CODE_SEARCH</p>
+<p># ... other types
+</code></pre></p>
+<p>---</p>
+<h2>Links</h2>
+<h3>Code</h3>
+<ul><li><strong>GitHub</strong>: https://github.com/mordechai/sparkii-rag (make public before launch)</li>
+<li><strong>API Docs</strong>: FastAPI auto-generated at <code>/docs</code> endpoint</li>
+</ul>
+<h3>Documentation</h3>
+<ul><li><a href="../assets/SUCCESS_DAY1.md">Day 1 Success Report</a> - Full capabilities breakdown</li>
+<li><a href="../assets/SPEED_COMPARISON.md">Speed Comparison</a> - Optimization journey</li>
+</ul>
+<h3>Try It</h3>
+<ul><li><strong>Demo</strong>: Available on request (email me)</li>
+<li><strong>API</strong>: <code>POST /ask</code> with natural language questions</li>
+</ul>
+---
+<h2>Tech Stack Tags</h2>
+<code>python</code> <code>fastapi</code> <code>postgresql</code> <code>pgvector</code> <code>stella-embeddings</code> <code>openai</code> <code>langchain</code> <code>rag</code> <code>vector-search</code> <code>claude</code> <code>supabase</code> <code>sentence-transformers</code>
+<p>---</p>
+<h2>What This Proves</h2>
+<strong>Pattern Recognition</strong>: Identified that generic RAG fails → added classification layer
+<strong>First Principles</strong>: Understood vector search limitations → built routing on top
+<strong>Production Mindset</strong>: Not a tutorial project → handles 253K real messages
+<strong>AI-Native Development</strong>: Built entire system with Claude Code assistance
+<strong>Performance Engineering</strong>: Optimized from 27hr → 12hr embedding time
+<p>This is the kind of work I do: see a real problem, understand it deeply, build a production solution.</p>
+<p>---</p>
+<h2>Meta Notes</h2>
+<div class="tech-tags">
+  <a href="/tech/#python" class="tag">python</a>
+  <a href="/tech/#fastapi" class="tag">fastapi</a>
+  <a href="/tech/#postgresql" class="tag">postgresql</a>
+  <a href="/tech/#pgvector" class="tag">pgvector</a>
+  <a href="/tech/#stella-embeddings" class="tag">stella-embeddings</a>
+  <a href="/tech/#openai" class="tag">openai</a>
+  <a href="/tech/#langchain" class="tag">langchain</a>
+  <a href="/tech/#rag" class="tag">rag</a>
+  <a href="/tech/#vector-search" class="tag">vector-search</a>
+  <a href="/tech/#claude" class="tag">claude</a>
+  <a href="/tech/#supabase" class="tag">supabase</a>
+  <a href="/tech/#sentence-transformers" class="tag">sentence-transformers</a>
+</div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:YOUR_EMAIL">Email</a>
+    </div>
+    <div class="footer-meta">
+      <a href="/about/full-story.html">Complete Story</a> |
+      Last updated: 2025-10-17
+    </div>
+  </footer>
+
+  <div class="depth-meter" aria-label="Content depth indicator">
+    <span class="depth-label">Depth:</span>
+    <span class="depth-dots" role="img" aria-label="Depth level indicator">
+      <span class="dot">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </span>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

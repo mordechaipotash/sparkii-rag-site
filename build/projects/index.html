@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | Mordechai</title>
+  <meta name="description" content="Production systems I've built solo with AI tools. RAG intelligence, tax processing automation, content pipelines.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="logo">mordechai.dev</a>
+      <div class="nav-links">
+        <a href="/projects/" class="active">Projects</a>
+        <a href="/thinking/">Thinking</a>
+        <a href="/tech/">Tech</a>
+        <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a> >
+    <span aria-current="page">Projects</span>
+  </nav>
+
+  <main class="container" id="main-content">
+    <h1>Projects</h1>
+    <p class="text-muted">Production systems I've built solo. No teams, no outsourcing. See what one person + AI tools can ship.</p>
+
+    <div class="cards-grid">
+      <article class="card">
+        <h2 class="card-title"><a href="/projects/sparkii-rag.html">Sparkii RAG System</a></h2>
+        <p class="card-summary">Production RAG system for 253,432 AI conversation messages with classification-aware retrieval, query routing, and Claude-powered synthesis. Built to make my entire AI learning history searchable.</p>
+        <div class="card-meta">
+          <span><strong>Scale:</strong> 253,432 messages indexed</span>
+          <span><strong>Tech:</strong> Stella, pgvector, FastAPI</span>
+          <span><strong>Status:</strong> Production</span>
+        </div>
+        <a href="/projects/sparkii-rag.html" class="card-link">Read more</a>
+      </article>
+
+      <article class="card">
+        <h2 class="card-title"><a href="/projects/wotc-tax.html">WOTC Tax Credit Processing</a></h2>
+        <p class="card-summary">AI-powered tax credit processing application: 3-tier microservices architecture handling PDF extraction, nested JSON→flat table mapping, and PostGIS spatial queries for Work Opportunity Tax Credit eligibility.</p>
+        <div class="card-meta">
+          <span><strong>Architecture:</strong> 3-tier microservices</span>
+          <span><strong>Database:</strong> 109-column table + PostGIS</span>
+          <span><strong>Status:</strong> Production</span>
+        </div>
+        <a href="/projects/wotc-tax.html" class="card-link">Read more</a>
+      </article>
+
+      <article class="card">
+        <h2 class="card-title"><a href="/projects/israeli-tech.html">Israeli Tech Content Corpus</a></h2>
+        <p class="card-summary">Automated pipeline for collecting, transcribing, and translating Israeli tech podcasts and articles. Built to understand the Israeli ecosystem through primary sources - 31 podcast episodes + 75+ articles processed.</p>
+        <div class="card-meta">
+          <span><strong>Sources:</strong> Reversim, Geektime, NoCamels</span>
+          <span><strong>Volume:</strong> 31 episodes + 75+ articles</span>
+          <span><strong>Status:</strong> Active collection</span>
+        </div>
+        <a href="/projects/israeli-tech.html" class="card-link">Read more</a>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:YOUR_EMAIL">Email</a>
+    </div>
+    <div class="footer-meta">
+      <a href="/about/full-story.html">Complete Story</a> |
+      Last updated: 2025-10-17
+    </div>
+  </footer>
+
+  <div class="depth-meter" aria-label="Content depth indicator">
+    <span class="depth-label">Depth:</span>
+    <span class="depth-dots" role="img" aria-label="Depth level indicator">
+      <span class="dot">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </span>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
