@@ -1,11 +1,6 @@
 {
   "buildCommand": "python3 build_site.py",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/build/$1"
-    }
-  ],
+  "outputDirectory": "build",
   "headers": [
     {
       "source": "/api/(.*)",
