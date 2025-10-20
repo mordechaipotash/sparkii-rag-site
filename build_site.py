@@ -269,6 +269,14 @@ def main():
         'The Full Story'
     )
 
+    # Build search page
+    print('\nBuilding search page...')
+    build_page(
+        str(content_dir / 'search' / 'interface.md'),
+        str(build_dir / 'search' / 'index.html'),
+        'Search AI Knowledge'
+    )
+
     print('\n✅ Build complete!')
     print(f'\nGenerated site in: {build_dir}')
     print('\nNext steps:')

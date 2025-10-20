@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search AI Knowledge | Mordechai</title>
+  <meta name="description" content="Search AI Knowledge">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="logo">mordechai.dev</a>
+      <div class="nav-links">
+        <a href="/projects/">Projects</a>
+        <a href="/thinking/">Thinking</a>
+        <a href="/tech/">Tech</a>
+        <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">Home</a> >
+  <a href="/search/">Search</a> >
+  <span aria-current="page">Index</span>
+</nav>
+
+  <main class="container" id="main-content">
+    <p>---
+title: Search AI Knowledge
+description: Search 253,432 AI conversations with 94.8% average similarity using stella embeddings
+---</p>
+<div class="search-hero">
+  <h1>Search 253,432 AI Conversations</h1>
+  <p class="search-subtitle">2.5 years of learning • stella-en-1.5B-v5 embeddings • 94.8% avg similarity</p>
+</div>
+<div class="search-container">
+  
+  <div class="search-input-wrapper">
+    <input
+      type="text"
+      id="search-query"
+      class="search-input"
+      placeholder="Ask anything: pandas dataframes, postgres pooling, RAG systems, FastAPI async..."
+      autocomplete="off"
+    />
+    <button id="search-btn" class="search-button">Search</button>
+  </div>
+<div class="search-filters">
+    <select id="filter-language" class="filter-select">
+      <option value="">All Languages</option>
+      <option value="python">Python</option>
+      <option value="typescript">TypeScript</option>
+      <option value="sql">SQL</option>
+      <option value="javascript">JavaScript</option>
+      <option value="bash">Bash</option>
+    </select>
+<select id="filter-depth" class="filter-select">
+      <option value="">All Levels</option>
+      <option value="BASIC">BASIC</option>
+      <option value="INTERMEDIATE">INTERMEDIATE</option>
+      <option value="ADVANCED">ADVANCED</option>
+    </select>
+<label class="filter-checkbox">
+      <input type="checkbox" id="filter-code-only">
+      <span>Code examples only</span>
+    </label>
+<label class="filter-checkbox">
+      <input type="checkbox" id="filter-solutions">
+      <span>Solutions only</span>
+    </label>
+  </div>
+<div class="example-queries">
+    <p>Try:</p>
+    <button class="example-query" data-query="pandas groupby performance">pandas groupby</button>
+    <button class="example-query" data-query="postgres connection pooling async">postgres pooling</button>
+    <button class="example-query" data-query="RAG vector search optimization">RAG systems</button>
+    <button class="example-query" data-query="FastAPI authentication patterns">FastAPI auth</button>
+  </div>
+<div id="search-loading" class="search-loading hidden">
+    <div class="spinner"></div>
+    <p>Searching 253K messages with stella embeddings...</p>
+  </div>
+<div id="search-results" class="search-results"></div>
+<div id="search-stats" class="search-stats hidden"></div>
+</div>
+<style>
+.search-hero {
+  text-align: center;
+  margin: 2rem 0 3rem;
+}
+<p>.search-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}</p>
+<p>.search-container {
+  max-width: 900px;
+  margin: 0 auto;
+}</p>
+<p>.search-input-wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}</p>
+<p>.search-input {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}</p>
+<p>.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+}</p>
+<p>.search-button {
+  padding: 1rem 2rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}</p>
+<p>.search-button:hover {
+  background: #0056b3;
+}</p>
+<p>.search-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}</p>
+<p>.filter-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}</p>
+<p>.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}</p>
+<p>.example-queries {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}</p>
+<p>.example-queries p {
+  margin: 0;
+  color: #666;
+  font-weight: 500;
+}</p>
+<p>.example-query {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}</p>
+<p>.example-query:hover {
+  background: #e0e0e0;
+}</p>
+<p>.search-loading {
+  text-align: center;
+  padding: 3rem;
+}</p>
+<p>.search-loading.hidden {
+  display: none;
+}</p>
+<p>.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}</p>
+<p>@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}</p>
+<p>.search-results {
+  margin-top: 2rem;
+}</p>
+<p>.result-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s;
+}</p>
+<p>.result-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}</p>
+<p>.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}</p>
+<p>.similarity-score {
+  padding: 0.25rem 0.75rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}</p>
+<p>.similarity-score.excellent {
+  background: #e8f5e9;
+  color: #2e7d32;
+}</p>
+<p>.similarity-score.good {
+  background: #fff3e0;
+  color: #e65100;
+}</p>
+<p>.result-content {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-height: 300px;
+  overflow: hidden;
+  position: relative;
+}</p>
+<p>.result-content.expanded {
+  max-height: none;
+}</p>
+<p>.result-metadata {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: #666;
+}</p>
+<p>.metadata-tag {
+  padding: 0.25rem 0.75rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}</p>
+<p>.search-stats {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+}</p>
+<p>.search-stats.hidden {
+  display: none;
+}</p>
+<p>.expand-btn {
+  color: #007bff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 0.5rem;
+}
+</style></p>
+<script>
+(function() {
+  const searchInput = document.getElementById('search-query');
+  const searchButton = document.getElementById('search-btn');
+  const resultsContainer = document.getElementById('search-results');
+  const loadingEl = document.getElementById('search-loading');
+  const statsEl = document.getElementById('search-stats');
+<p>// Example queries
+  document.querySelectorAll('.example-query').forEach(btn => {
+    btn.addEventListener('click', () => {
+      searchInput.value = btn.dataset.query;
+      performSearch();
+    });
+  });</p>
+<p>// Search on button click
+  searchButton.addEventListener('click', performSearch);</p>
+<p>// Search on Enter key
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  });</p>
+<p>async function performSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;</p>
+<p>// Get filters
+    const filters = {};
+    const language = document.getElementById('filter-language').value;
+    const depth = document.getElementById('filter-depth').value;
+    const codeOnly = document.getElementById('filter-code-only').checked;
+    const solutionsOnly = document.getElementById('filter-solutions').checked;</p>
+<p>if (language) filters.code_language = language;
+    if (depth) filters.technical_depth = depth;
+    if (codeOnly) filters.contains_code = true;
+    if (solutionsOnly) filters.has_solution = true;</p>
+<p>// Show loading
+    loadingEl.classList.remove('hidden');
+    resultsContainer.innerHTML = '';
+    statsEl.classList.add('hidden');</p>
+<p>try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          top_k: 10,
+          filters: Object.keys(filters).length > 0 ? filters : null
+        })
+      });</p>
+<p>const data = await response.json();</p>
+<p>// Hide loading
+      loadingEl.classList.add('hidden');</p>
+<p>if (data.error) {
+        resultsContainer.innerHTML = <code>
+          <div class="result-card">
+            <p><strong>Error:</strong> ${data.error}</p>
+            <p>${data.hint || data.details || ''}</p>
+          </div>
+        </code>;
+        return;
+      }</p>
+<p>// Display results
+      if (data.results && data.results.length > 0) {
+        resultsContainer.innerHTML = data.results.map((result, idx) => {
+          const similarity = (result.similarity * 100).toFixed(1);
+          const scoreClass = similarity >= 90 ? 'excellent' : 'good';</p>
+<p>return <code>
+            <div class="result-card">
+              <div class="result-header">
+                <span><strong>Result ${idx + 1}</strong></span>
+                <span class="similarity-score ${scoreClass}">${similarity}% match</span>
+              </div>
+              <div class="result-content" id="content-${idx}">
+                ${escapeHtml(result.content.substring(0, 500))}${result.content.length > 500 ? '...' : ''}
+              </div>
+              ${result.content.length > 500 ? </code><button class="expand-btn" onclick="toggleExpand(${idx})">Show full content</button><code> : ''}
+              <div class="result-metadata">
+                ${result.metadata.code_language ? </code><span class="metadata-tag">📝 ${result.metadata.code_language}</span><code> : ''}
+                ${result.metadata.technical_depth ? </code><span class="metadata-tag">🎯 ${result.metadata.technical_depth}</span><code> : ''}
+                ${result.metadata.has_solution ? '<span class="metadata-tag">✅ Solution</span>' : ''}
+              </div>
+            </div>
+          </code>;
+        }).join('');</p>
+<p>// Show stats
+        const avgSimilarity = (data.results.reduce((sum, r) => sum + r.similarity, 0) / data.results.length * 100).toFixed(1);
+        statsEl.innerHTML = <code>
+          <p><strong>${data.results.length} results</strong> • Avg similarity: ${avgSimilarity}% • Search time: ${data.search_time_ms}ms ${data.cached ? '(cached)' : ''}</p>
+        </code>;
+        statsEl.classList.remove('hidden');
+      } else {
+        resultsContainer.innerHTML = '<div class="result-card"><p>No results found. Try a different query or remove filters.</p></div>';
+      }</p>
+<p>} catch (error) {
+      loadingEl.classList.add('hidden');
+      resultsContainer.innerHTML = <code>
+        <div class="result-card">
+          <p><strong>Search failed:</strong> ${error.message}</p>
+          <p>The search backend may be starting up. Try again in a moment.</p>
+        </div>
+      </code>;
+    }
+  }</p>
+<p>function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }</p>
+<p>// Make toggleExpand global
+  window.toggleExpand = function(idx) {
+    const content = document.getElementById(<code>content-${idx}</code>);
+    content.classList.toggle('expanded');
+  };
+})();
+</script></p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:YOUR_EMAIL">Email</a>
+    </div>
+    <div class="footer-meta">
+      <a href="/about/full-story.html">Complete Story</a> |
+      Last updated: 2025-10-20
+    </div>
+  </footer>
+
+  <div class="depth-meter" aria-label="Content depth indicator">
+    <span class="depth-label">Depth:</span>
+    <span class="depth-dots" role="img" aria-label="Depth level indicator">
+      <span class="dot">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </span>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
